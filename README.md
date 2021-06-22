@@ -213,10 +213,18 @@ inféré par la méthode "glasso".
 à partir de liens non quantitatifs
 ```{r eval=FALSE, include=TRUE}
 library(igraph)
-ecount(refit_matrix) ## nombre d'arêtes reliant deux noeuds contenue dans le réseau
-average_path_length(refit_matrix) ## moyenne de la longueur du chemin le plus court, calculée sur toutes les paires de noeuds
-transitivity(refit_matrix, type="globale") ## probabilité que deux noeuds respectivement liés à un même troisième noeuds soient eux-mêmes reliés.
-connectance
+ecount(refit_matrix) ## nombre d'arêtes reliant deux noeuds contenue dans le réseau  
+sum(degree(refit_matrix)) ## nombre d'arêtes, i.e nombre de coefficients pas à 0 ~ 2*ecount  
+mean(degree(refit_matrix)) ## nombre moyen d'arêtes, i.e nombre de coefficients pas à 0 ~ 2*ecount  
+average_path_length(refit_matrix) ## moyenne de la longueur du chemin le plus court, calculée sur toutes les paires de noeuds  
+transitivity(refit_matrix, type="globale") ## probabilité que deux noeuds respectivement liés à un même troisième noeuds soient eux-mêmes reliés  
+
+connectance <- function(refit_matrix){ ## fonction de la connectance
+ l = ecount(refit_matrix)
+ n = nrow(refit_matrix)
+ lp = n*(n-1)/2
+ return(l-lp)}
+connectance(refit_matrix) ## rapport entre la somme des liens effectifs et la somme des liens potentiels
 
 ```
 
@@ -224,10 +232,10 @@ connectance
 à partir de liens non quantitatifs
 ```{r eval=FALSE, include=TRUE}
 library(igraph)
-betweenness(refit_matrix, normalized=TRUE)
-closeness(refit_matrix, normalized=TRUE)
-degree(refit_matrix, normalized=TRUE)
-transitivity(refit_matrix, type="local")
+betweenness(refit_matrix, normalized=TRUE) ## Nombre de chemins les plus courts reliant deux nœuds qui passent par le noeud A.
+closeness(refit_matrix, normalized=TRUE) ## Proximité moyenne vis-à-vis des autres nœuds du graphe, i.e. la longueur moyenne de tous les chemins les plus courts d'un nœud à tous les autres nœuds d'un réseau
+degree(refit_matrix, normalized=TRUE) ## nombre de liens partant/arrivant du noeud A
+transitivity(refit_matrix, type="local") ## transitivité locale
 
 ```
-
+## **VII) Transformation de la table d'adjacence pour la mettre dans cytoscape** 

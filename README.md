@@ -1,46 +1,49 @@
 # Comment utiliser Spiec-Easi ?
 
 ---
-titre: "How to use SPIEC-EASI"   
+titre: "Comment utiliser Spiec-Easi ?"   
 auteure: "Paola Fournier"   
 date: "21/06/2021"   
 sortie: html_document   
 ---
 # Comment utiliser SPIEC-EASI (Sparse and Compositionally Robust Inference of Microbial Ecological Networks)?  
 
-<p style="text-align:justify;">Ce tutoriel s'adresse aux personnes novices voulant s'initier à l'inférence de réseau via le modèle SPIEC-EASI (Kurtz et al., 2015).   
-Github : https://github.com/zdk123/SpiecEasi  
-doi : https://doi.org/10.1371/journal.pcbi.1004226    </p>  
+Ce tutoriel s'adresse aux personnes novices voulant s'initier à l'inférence de réseau via le modèle Spiec-Easi (Kurtz et al., 2015).       
 
-<p style="text-align:justify;">Mon choix s'est porté sur ce modèle car il s'attaque à deux problèmes majeurs des modèles basés sur la corrélation :   
-1) il utilise le concept de dépendance conditionnelle pour éviter la détection de taxons corrélés mais indirectement connectés.  La corrélation est une métrique par paire et donc limitée dans un cadre multivarié.  
-2) il tient compte de la compositionnalité des données en appliquant une transformation "clr" sur la table d'abondance d'entrée.   </p>  
+  Github : https://github.com/zdk123/SpiecEasi  
+doi : https://doi.org/10.1371/journal.pcbi.1004226 
+
+Mon choix s'est porté sur ce modèle car il s'attaque à deux problèmes majeurs des modèles basés sur la corrélation :   
+
+  1) il utilise le concept de dépendance conditionnelle pour éviter la détection de taxons corrélés mais indirectement connectés.  La corrélation est une métrique par paire et donc limitée dans un cadre multivarié.  
+  2) il tient compte de la compositionnalité des données en appliquant une transformation "clr" sur la table d'abondance d'entrée.
 
 ## **Quelques concepts importants avant de se lancer dans l'inférence de réseaux microbiens**  
 ### Compositionnalité des données   
 Je voudrais d'abord parler de la façon dont les données de séquençage d'amplicons sont générées et pourquoi cela peut poser problème.     
 
 **Qu'est-ce qu'une donnée compositionnelle?**   
-<p style="text-align:justify;">Les données compositionnelles sont définies comme un vecteur de nombres réels strictement positifs avec un total inconnu ou non informatif (par exemple la profondeur de séquençage) car l'abondance de chaque composant ne porte que des informations relatives (Pawlowsky-Glahn *et al.*, 2015).   
+es données compositionnelles sont définies comme un vecteur de nombres réels strictement positifs avec un total inconnu ou non informatif (par exemple la profondeur de séquençage) car l'abondance de chaque composant ne porte que des informations relatives (Pawlowsky-Glahn et al., 2015).   
 
 **En quoi les données de séquençage d'amplicons sont compositionnelle?**      
-<p style="text-align:justify;">Les instruments de séquençage ne peuvent fournir des lectures que jusqu'à leur capacité et, par conséquent, chaque échantillon est soumis à une contrainte arbitraire de somme constante. Les jeux de données dérivés des NGS sont donc de nature compositionnelle. </p>   
+Les instruments de séquençage ne peuvent fournir des lectures que jusqu'à leur capacité et, par conséquent, chaque échantillon est soumis à une contrainte arbitraire de somme constante. Les jeux de données dérivés des NGS sont donc de nature compositionnelle.  
 
-**Quelles en sont les conséquences ? **   
-<p style="text-align:justify;">Le nombre de lectures par échantillon n'est pas interprétable en soi : le nombre total de lectures attribuées à un échantillon ou à un taxa ne peut fournir aucune information sur le nombre de molécules dans l'échantillon d'origine.</p>       
-<p style="text-align:justify;">Nous pouvons seulement étudier les changements relatifs : nous ne pouvons pas comparer directement les échantillons parce qu'ils ont une profondeur de séquençage spécifique.</p>       
-<p style="text-align:justify;">De nombreuses méthodes statistiques ne doivent pas être utilisées, car elles supposent l'indépendance entre les caractéristiques, ce qui n'est pas le cas pour les données générées par le NGS.</p>    
+**Quelles en sont les conséquences ?**   
+Le nombre de lectures par échantillon n'est pas interprétable en soi : le nombre total de lectures attribuées à un échantillon ou à un taxa ne peut fournir aucune information sur le nombre de molécules dans l'échantillon d'origine.      
+Nous pouvons seulement étudier les changements relatifs : nous ne pouvons pas comparer directement les échantillons parce qu'ils ont une profondeur de séquençage spécifique.     
+De nombreuses méthodes statistiques ne doivent pas être utilisées, car elles supposent l'indépendance entre les caractéristiques, ce qui n'est pas le cas pour les données générées par le NGS.   
 
 **Solutions proposées dans la littérature**   
-<p style="text-align:justify;">Une technique populaire pour recalculer les abondances absolues est la comparaison du rapport logarithmique des comptages par rapport à une espèce de référence. Dans ce cas, l'espèce de référence est connue pour avoir une abondance approximativement stable à travers les populations. Ces rapports sont comparés au lieu des comptages directement.</p>       
-<p style="text-align:justify;">Si une telle espèce n'est pas connue ou n'est pas disponible, la référence peut être remplacée par une mesure composite robuste obtenue à partir de diverses espèces.Une de ces mesures est la moyenne géométrique de tous les comptages de l'échantillon. Cette méthode suppose qu'un agrégat de diverses espèces ne change pas en masse entre leurs environnements d'origine.</p>       
+Une technique populaire pour recalculer les abondances absolues est la comparaison du rapport logarithmique des comptages par rapport à une espèce de référence. Dans ce cas, l'espèce de référence est connue pour avoir une abondance approximativement stable à travers les populations. Ces rapports sont comparés au lieu des comptages directement.      
+Si une telle espèce n'est pas connue ou n'est pas disponible, la référence peut être remplacée par une mesure composite robuste obtenue à partir de diverses espèces. Une de ces mesures est la moyenne géométrique de tous les comptages de l'échantillon. Cette méthode suppose qu'un agrégat de diverses espèces ne change pas en masse entre leurs environnements d'origine.       
 
-###Principe des réseaux de co-occurrence    
-<p style="text-align:justify;">Les réseaux de co-occurrence nécessitent comme données d’entrée des tables d’abondances de taxons provenant de multiples échantillons. Lorsque deux taxons co-occurrent ou montrent un schéma d’abondance similaire parmi plusieurs échantillons, une relation positive est supposée entre eux. Un lien positif est illustré en vert ici ou un 1 dans la table d'adjacence. Inversement lorsque ces deux taxons s’excluent mutuellement, une relation négative est assumée, illustré ici par un lien rouge reliant deux noeuds ou un -1 dans la table d'adjacence.   </p>
+### Principe des réseaux de co-occurrence    
+Les réseaux de co-occurrence nécessitent comme données d’entrée des tables d’abondances de taxons provenant de multiples échantillons. Lorsque deux taxons co-occurrent ou montrent un schéma d’abondance similaire parmi plusieurs échantillons, une relation positive est supposée entre eux. Un lien positif est illustré en vert ici ou un 1 dans la table d'adjacence. Inversement lorsque ces deux taxons s’excluent mutuellement, une relation négative est assumée, illustré ici par un lien rouge reliant deux noeuds ou un -1 dans la table d'adjacence.   
 
-###Fonctionnement de SpiecEasi (méthode mb)  
-<p style="text-align:justify;">Je décris ici la méthode "mb" i.e. la sélection de voisinage de Meinshausen-Buhlmann (Meinshausen et Buhlmann, 2006) qui constitue une des deux méthodes d'inférence de réseaux supportées par la fonction SpiecEasi. La méthode "mb" a montré de bons résultats et est rapide d'utilisation en comparaisonb avec la méthode "glasso" (Kurtz *et al.*, 2015 ; Röttjers et Faust, 2018).   </p>
-<p style="text-align:justify;">A partir d’une table d’abondance de taxons sur de multiples échantillons, l'outil applique d'abord une transformation "clr" afin de pour recalculer les abondances absolues. La méthode d'inférence "mb" consiste à ajuster des régressions pénalisées en utilisant tour à tour chaque espèce comme réponse et toutes les autres comme prédicteurs. Le réseau est inféré avec 80% des échantillons n fois. Il réalise ses étapes sur une plage de valeurs de λ le paramètre qui contrôle la puissance de la régularisation, avec le réseau complet et le réseau vide comme réseaux extrêmes.SpiecEasi génère donc plusieurs tables d’adjacence à partir du même jeux de données initiale, mais de sous-échantillons différents, pour chaque valeur de lambda.Par le biais de l'outil StARS, il sélectionne λ tel que la stabilité globale des arêtes à travers les itérations soit maximisée.La dernière étape consiste à générer le réseau avec cette fois-ci 100% des données et le λ optimisé.   </p>
+### Fonctionnement de SpiecEasi (méthode mb)  
+Je décris ici la méthode "mb" i.e. la sélection de voisinage de Meinshausen-Buhlmann (Meinshausen et Buhlmann, 2006) qui constitue une des deux méthodes d'inférence de réseaux supportées par la fonction SpiecEasi. La méthode "mb" a montré de bons résultats et est rapide d'utilisation en comparaisonb avec la méthode "glasso" (Kurtz et al., 2015 ; Röttjers et Faust, 2018).   
+
+A partir d’une table d’abondance de taxons sur de multiples échantillons, l'outil applique d'abord une transformation "clr" afin de recalculer les abondances absolues. La méthode d'inférence "mb" consiste à ajuster des régressions pénalisées en utilisant tour à tour chaque espèce comme réponse et toutes les autres comme prédicteurs. De cette manière, le réseau est inféré à partir de 80% des échantillons n fois. Le modèle réalise ces n itérations (inférence du réseau à partir d'un sous-échantillon) sur une plage de valeurs de λ le paramètre qui contrôle la puissance de la régularisation. SpiecEasi génère donc plusieurs tables d’adjacence à partir du même jeux de données initiale, mais de sous-échantillons différents, pour chaque valeur de lambda. Par le biais de l'outil StARS, il sélectionne λ tel que la stabilité globale des arêtes à travers les itérations soit maximisée.La dernière étape consiste à générer le réseau avec cette fois-ci 100% des données et le λ optimisé.
 
 
 

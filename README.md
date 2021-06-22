@@ -154,11 +154,12 @@ On joue sur l'abondance via "sum(x > 0)" et sur la prévalence via  "(0.2*length
 ```{r eval=FALSE, include=TRUE}
 obj_physeq1_filtre = filter_taxa(obj_physeq1, function(x) sum(x > 0) > (0.2*length(x)), TRUE)
 ```
-Un autre moyen de filtrer les données qui soit moins arbitraire peut se faire via l'outil multicola.
-Lien vers l'article : https://academic.oup.com/nar/article/38/15/e155/2409766?login=true
-doi:10.1093/nar/gkq545
-scripts disponibles ici : https://www.mpi-bremen.de/en/Softwares.html#section1550
+Un autre moyen de filtrer les données qui ne soit pas arbitraire est l'utilisation de l'outil MultiCoLA. Cet outil évalue l'impact de différents seuils d'abondance ou de rareté sur la structure du jeu de données résultant.
 
+  Lien vers l'article : https://academic.oup.com/nar/article/38/15/e155/2409766?login=true   
+  doi:10.1093/nar/gkq545   
+  Scripts disponibles ici : https://www.mpi-bremen.de/en/Softwares.html#section1550
+  
 ## **IV) Réseaux de co-occurrence**  
 
 Obtention du réseau : valeurs des paramètres conseillées par Kurtz

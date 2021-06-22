@@ -84,16 +84,15 @@ Forme et contenu des matrices d'entrée : cf lien ci-dessus
 
 Importer les données csv
 
-otu_mat = matrice d'abondance des taxons à travers de multiples échantillons : otu en lignes/échantillons en colonnes
+
 ```{r eval=FALSE, include=TRUE}
+## otu_mat = matrice d'abondance des taxons à travers de multiples échantillons : otu en lignes/échantillons en colonnes
 otu_mat<- read.csv("otu_mat.csv", sep=";", header = T) ; View(otu_mat)
-```
-tax_mat = matrice de taxinomie : otu en lignes/taxinomie en colonnes
-```{r eval=FALSE, include=TRUE}
+
+## tax_mat = matrice de taxinomie : otu en lignes/taxinomie en colonnes
 tax_mat<- read.csv("tax_mat.csv", sep=";", header = T) ; View(tax_mat)
-```
-samples_df = matrice des variables : echantillons en lignes/variables en colonnes
-```{r eval=FALSE, include=TRUE}
+
+## samples_df = matrice des variables : echantillons en lignes/variables en colonnes
 samples_df <- read.csv("samples_df.csv", sep=";", header = T) ; View(samples_df)
 ```
 Les objets phyloseq doivent avoir des noms de lignes

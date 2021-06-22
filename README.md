@@ -35,16 +35,19 @@ De nombreuses méthodes statistiques ne doivent pas être utilisées, car elles 
 
 **Solutions proposées dans la littérature**   
 Une technique populaire pour recalculer les abondances absolues est la comparaison du rapport logarithmique des comptages par rapport à une espèce de référence. Dans ce cas, l'espèce de référence est connue pour avoir une abondance approximativement stable à travers les populations. Ces rapports sont comparés au lieu des comptages directement.      
-Si une telle espèce n'est pas connue ou n'est pas disponible, la référence peut être remplacée par une mesure composite robuste obtenue à partir de diverses espèces. Une de ces mesures est la moyenne géométrique de tous les comptages de l'échantillon. Cette méthode suppose qu'un agrégat de diverses espèces ne change pas en masse entre leurs environnements d'origine.       
+Si une telle espèce n'est pas connue ou n'est pas disponible, la référence peut être remplacée par une mesure composite robuste obtenue à partir de diverses espèces. Une de ces mesures est la moyenne géométrique de tous les comptages de l'échantillon. Cette méthode suppose qu'un agrégat de diverses espèces ne change pas en masse entre leurs environnements d'origine. 
+![alt text](https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/420285dcb6df1568a4d9084f0f5db615da09e6eb/Pictures%20README/alr.PNG)
+![alt text](https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/420285dcb6df1568a4d9084f0f5db615da09e6eb/Pictures%20README/clr.PNG)
 
 ### Principe des réseaux de co-occurrence    
-Les réseaux de co-occurrence nécessitent comme données d’entrée des tables d’abondances de taxons provenant de multiples échantillons. Lorsque deux taxons co-occurrent ou montrent un schéma d’abondance similaire parmi plusieurs échantillons, une relation positive est supposée entre eux. Un lien positif est illustré en vert ici ou un 1 dans la table d'adjacence. Inversement lorsque ces deux taxons s’excluent mutuellement, une relation négative est assumée, illustré ici par un lien rouge reliant deux noeuds ou un -1 dans la table d'adjacence.   
+Les réseaux de co-occurrence nécessitent comme données d’entrée des tables d’abondances de taxons provenant de multiples échantillons. Lorsque deux taxons co-occurrent ou montrent un schéma d’abondance similaire parmi plusieurs échantillons, une relation positive est supposée entre eux. Un lien positif est illustré en vert ici ou un 1 dans la table d'adjacence. Inversement lorsque ces deux taxons s’excluent mutuellement, une relation négative est assumée, illustré ici par un lien rouge reliant deux noeuds ou un -1 dans la table d'adjacence. 
+![alt text](https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/ef1049e3acef34d2c039fd7aee9abb8fbc162609/Pictures%20README/Principe%20R%C3%A9seaux%20de%20co-occurrence.PNG)
 
 ### Fonctionnement de SpiecEasi (méthode mb)  
 Je décris ici la méthode "mb" i.e. la sélection de voisinage de Meinshausen-Buhlmann (Meinshausen et Buhlmann, 2006) qui constitue une des deux méthodes d'inférence de réseaux supportées par la fonction SpiecEasi. La méthode "mb" a montré de bons résultats et est rapide d'utilisation en comparaisonb avec la méthode "glasso" (Kurtz et al., 2015 ; Röttjers et Faust, 2018).   
 
 A partir d’une table d’abondance de taxons sur de multiples échantillons, l'outil applique d'abord une transformation "clr" afin de recalculer les abondances absolues. La méthode d'inférence "mb" consiste à ajuster des régressions pénalisées en utilisant tour à tour chaque espèce comme réponse et toutes les autres comme prédicteurs. De cette manière, le réseau est inféré à partir de 80% des échantillons n fois. Le modèle réalise ces n itérations (inférence du réseau à partir d'un sous-échantillon) sur une plage de valeurs de λ le paramètre qui contrôle la puissance de la régularisation. SpiecEasi génère donc plusieurs tables d’adjacence à partir du même jeux de données initiale, mais de sous-échantillons différents, pour chaque valeur de lambda. Par le biais de l'outil StARS, il sélectionne λ tel que la stabilité globale des arêtes à travers les itérations soit maximisée.La dernière étape consiste à générer le réseau avec cette fois-ci 100% des données et le λ optimisé.
-
+![alt text](https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/ef1049e3acef34d2c039fd7aee9abb8fbc162609/Pictures%20README/Principe%20SpiecEasi.PNG)
 
 
 ## **I) Telechargement des packages**  

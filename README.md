@@ -190,17 +190,22 @@ rownames(optbeta_matrix) <- rownames(otu_table(obj_physeq))
 ```
 Pour n'avoir que les liens négatifs :
 ```{r eval=FALSE, include=TRUE}
+optbeta_matrix_neg <- function (optbeta_matrix){
 optbeta_matrix[optbeta_matrix>0]=0 ## mettre les coefficients positifs à 0
 optbeta_matrix[optbeta_matrix<0]=1 ## mettre les coefficients négatifs à 1 (optionnel : si tu veux les avoir en qualitatif)
+return(optbeta_matrix)}
+
+optbeta_matrix_neg(optbeta_matrix)
 ```
-Pour n'avoir que les liens npositifs :
+Pour n'avoir que les liens positifs :
 ```{r eval=FALSE, include=TRUE}
+optbeta_matrix_pos <- function (optbeta_matrix){
 optbeta_matrix[optbeta_matrix>0]=1 ## mettre les coefficients positifs à 1 (optionnel : si tu veux les avoir en qualitatif)
 optbeta_matrix[optbeta_matrix<0]=0 ## mettre les coefficients négatifs à 0
+return(optbeta_matrix)}
+
+optbeta_matrix_pos(optbeta_matrix)
 ```
-
-
-
 Matrice de stabilité des arêtes : une interaction entre deux noeud est pondérée par une valeur de stabilité
 de l'arête. La stabilité globale des arêtes est calculée à travers les itérations pour le lambda optimale (cf principe de SpiecEasi).
 ```{r eval=FALSE, include=TRUE}
@@ -248,6 +253,7 @@ sum(degree(refit_matrix, normalized=TRUE))
 
 mean(degree(refit_matrix, normalized=TRUE))  
 #########
+
 
 connected.node <- function(reseau){ ## fonction du nombre de noeuds ayant au moins un lien dans le réseau
   return(length(which(degree(reseau)>=0)))

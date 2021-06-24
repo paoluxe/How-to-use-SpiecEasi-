@@ -46,6 +46,7 @@ Les réseaux de co-occurrence nécessitent comme données d’entrée des tables
 <p align="center">
 <img src="https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/ef1049e3acef34d2c039fd7aee9abb8fbc162609/Pictures%20README/Principe%20R%C3%A9seaux%20de%20co-occurrence.PNG" width = "700">
 </p>
+
 ### Fonctionnement de SpiecEasi (méthode mb)  
 Je décris ici la méthode "mb" i.e. la sélection de voisinage de Meinshausen-Buhlmann (Meinshausen et Buhlmann, 2006) qui constitue une des deux méthodes d'inférence de réseaux supportées par la fonction SpiecEasi. La méthode "mb" a montré de bons résultats et est rapide d'utilisation en comparaisonb avec la méthode "glasso" (Kurtz et al., 2015 ; Röttjers et Faust, 2018).   
 
@@ -187,6 +188,19 @@ optbeta_matrix = as.matrix(getOptBeta(se.data))
 colnames(optbeta_matrix) <- rownames(otu_table(obj_physeq))
 rownames(optbeta_matrix) <- rownames(otu_table(obj_physeq))
 ```
+Pour n'avoir que les liens négatifs :
+```{r eval=FALSE, include=TRUE}
+optbeta_matrix[optbeta_matrix>0]=0 ## mettre les coefficients positifs à 0
+optbeta_matrix[optbeta_matrix<0]=1 ## mettre les coefficients négatifs à 1 (optionnel : si tu veux les avoir en qualitatif)
+```
+Pour n'avoir que les liens npositifs :
+```{r eval=FALSE, include=TRUE}
+optbeta_matrix[optbeta_matrix>0]=1 ## mettre les coefficients positifs à 1 (optionnel : si tu veux les avoir en qualitatif)
+optbeta_matrix[optbeta_matrix<0]=0 ## mettre les coefficients négatifs à 0
+```
+
+
+
 Matrice de stabilité des arêtes : une interaction entre deux noeud est pondérée par une valeur de stabilité
 de l'arête. La stabilité globale des arêtes est calculée à travers les itérations pour le lambda optimale (cf principe de SpiecEasi).
 ```{r eval=FALSE, include=TRUE}
@@ -214,17 +228,51 @@ inféré par la méthode "glasso".
 ```{r eval=FALSE, include=TRUE}
 library(igraph)
 ecount(refit_matrix) ## nombre d'arêtes reliant deux noeuds contenue dans le réseau  
-sum(degree(refit_matrix)) ## nombre d'arêtes, i.e nombre de coefficients pas à 0 ~ 2*ecount  
-mean(degree(refit_matrix)) ## nombre moyen d'arêtes, i.e nombre de coefficients pas à 0 ~ 2*ecount  
+
+sum(degree(refit_matrix)) ## somme du nombre d'arêtes par noeuds ~ 2* ecount
+
+mean(degree(refit_matrix)) ## moyenne du nombre d'arêtes par noeuds 
+
+#Il est possible de normaliser ces métriques précédentes par le nombre de neouds présent afin qu'elles apportent une information indépendantes
+#du nombre de neouds connectés : en effet plus le réseau contient de noeuds plus il y a de chance que le nombre d'arêtes soit également élevé.
+# Une façon de faire est la suivante
+
+ecount.norm <- function(refit_matrix){
+  noeud <- vcount(refit_matrix)
+  edge <- ecount(refit_matrix)
+  return(edge/noeud)
+}
+ecount.norm (refit_matrix)
+
+sum(degree(refit_matrix, normalized=TRUE)) 
+
+mean(degree(refit_matrix, normalized=TRUE))  
+#########
+
+connected.node <- function(reseau){ ## fonction du nombre de noeuds ayant au moins un lien dans le réseau
+  return(length(which(degree(reseau)>=0)))
+}
+connected.node(refit_matrix) ## nombre de noeuds connectés
+
 average_path_length(refit_matrix) ## moyenne de la longueur du chemin le plus court, calculée sur toutes les paires de noeuds  
 transitivity(refit_matrix, type="globale") ## probabilité que deux noeuds respectivement liés à un même troisième noeuds soient eux-mêmes reliés  
 
-connectance <- function(refit_matrix){ ## fonction de la connectance
- l = ecount(refit_matrix)
- n = nrow(refit_matrix)
- lp = n*(n-1)/2
- return(l-lp)}
-connectance(refit_matrix) ## rapport entre la somme des liens effectifs et la somme des liens potentiels
+
+ edge.density <- function(refit_matrix){ ## fonction de la densité de liens
+  noeud <- vcount(refit_matrix)
+  edge <- ecount(refit_matrix) 
+  combinaisons <- (noeud*(noeud - 1))/2
+  return(edge/combinaisons)
+}
+edge.density(refit_matrix) ## rapport entre la somme des liens effectifs et la somme des liens potentiels
+
+
+walktrap <- function(refit_matrix){ ## nombre de modules avec la méthode walktrap
+  cluster <- cluster_walktrap(refit_matrix)
+
+  return(length(cluster))
+}
+walktrap(refit_matrix) ## nombre de modules que contient le réseau
 
 ```
 

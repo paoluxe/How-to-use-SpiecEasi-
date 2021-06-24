@@ -294,6 +294,11 @@ transitivity(refit_matrix, type="local") ## transitivité locale
 ```
 ## **VII) Transformation de la table d'adjacence pour la mettre dans cytoscape** 
 ```{r eval=FALSE, include=TRUE}
+
+install.packages("remotes")
+remotes::install_github("hangxiong/wNetwork")
+library(wNetwork)
+
 reseau_pour_cytoscape <- get.data.frame(graph.adjacency(as.matrix(refit_matrix),weighted=TRUE))
 write.csv(reseau_pour_cytoscape, file = "reseau_pour_cytoscape.csv")
 ```

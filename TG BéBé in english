@@ -276,3 +276,16 @@ edge.density(refit_matrix) ## ratio between the sum of the effective links and t
 ```
 
 ## **VI) Calculation of the node metrics (node scale)** 
+from non-quantitative links
+```{r eval=FALSE, include=TRUE}
+library(igraph)
+betweenness(refit_matrix, normalized=TRUE) ## Number of shortest paths connecting two nodes that pass through node A.
+closeness(refit_matrix, normalized=TRUE) ## Average proximity to other nodes in the graph, i.e. the average length of all shortest paths from a node to all other nodes in a network
+degree(refit_matrix, normalized=TRUE) ## number of links from/to node A
+transitivity(refit_matrix, type="local") ## local transitivity
+
+```
+## **VII) Transformation of the adjacency table to use it in cytoscape** 
+```{r eval=FALSE, include=TRUE}
+
+```

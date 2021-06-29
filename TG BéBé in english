@@ -19,4 +19,25 @@ I chose this model because it addresses two major problems of correlation-based 
   2)it takes into account the compositionality of the data by applying a "clr" transformation on the input abundance table.
   
 ## **Some important concepts before embarking on microbial network inference**
-### Data compositionality 
+### Compositional data
+let's speak first about how amplicon sequencing data is generated and why that can be a problem 
+
+**What is a compositional data ?**   
+Compositional data is defined as a vector of strictly positive real numbers with an unknown or uninformative total (e.g., sequencing depth) because the abundance of each component carries only relative information (Pawlowsky-Glahn et al., 2015). 
+
+**How are amplicon sequencing data compositional?**
+Sequencing machines can only provide reads up to their capacity, and therefore each sample is subjected to an arbitrary constant sum constraint. NGS-derived datasets are therefore compositional in nature. 
+
+**What are the consequences?**
+The number of reads per sample is not fully interpretable by itself: the total number of reads assigned to a sample or taxa do not provide any information about the number of DNA molecules in the original samples.   
+Only the relative changes can be oberved: samples cannot be directly compared because they have a specific sequencing depth. 
+Many statistical methods should not be used because they assume independence between features (e.g., abondance of each taxa in one sample), which is not the case for NGS generated data.   
+
+**Litterature and proposed solutions**
+A popular technique for recalculating absolute abundances is to compare the log ratio of counts to a reference species. In this case, the reference species is known to have an approximately stable abundance across populations. These ratios are compared instead of counts directly.      
+If such a species is not known or not available, the reference can be replaced by a robust composite measure obtained from various species. One such measure is the geometric mean of all counts in the sample. This method assumes that an aggregate of various species does not change in mass between their original environments. Figure 1 illustrates the application of alr and clr transformation
+
+
+<img src="https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/5d1ce20694fb1a99d621cc01e3b2f2cb4f884c21/Pictures%20README/log-ratio.PNG">
+
+

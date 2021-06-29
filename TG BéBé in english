@@ -47,5 +47,7 @@ Co-occurrence networks require as input abundance tables of taxa from multiple s
 <img src="https://github.com/paoluxe/How-to-use-SpiecEasi-/blob/ef1049e3acef34d2c039fd7aee9abb8fbc162609/Pictures%20README/Principe%20R%C3%A9seaux%20de%20co-occurrence.PNG" width = "700">
 </p>
 
-### How SpiecEasi works (mb method)  
+### How SpiecEasi works (mb method)
+Here is described the "mb" method i.e. Meinshausen-Buhlmann neighborhood selection (Meinshausen and Buhlmann, 2006) which is one of the two network inference methods supported by the SpiecEasi function. The "mb" method has shown good results and is fast in comparison with the "glasso" method (Kurtz et al., 2015; Röttjers and Faust, 2018).   
 
+From a table of taxon abundances on multiple samples, it first applies a "clr" transformation to recalculate absolute abundances. The "mb" inference method consists of fitting penalized regressions using each species in turn as the response and all others as predictors.  In this way, the network is inferred from 80% of the samples n times. The model performs these n iterations (inferring the network from a subsample) over a range of values of λ, the parameter that controls the power of the regularization. SpiecEasi thus generates several adjacency tables from the same initial dataset, but from different subsamples, for each lambda value. Through the StARS tool, it selects λ such that the overall stability of the edges across iterations is maximized.The last step is to generate the network with 100% of the data and the optimized λ.

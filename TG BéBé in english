@@ -1,0 +1,22 @@
+# How to use Spiec-Easi?
+
+---
+titre: "How to use Spiec-Easi?"
+autehor: "Paola Fournier" 
+date: "21/06/2021"
+sortie: htlm_document
+---
+# How to use Spiec-Easi (Sparse and Compositionally Robust Inference of Microbial Ecological Networks)?
+
+This tutorial is intended for novices who wants to get acquainted with network inference via the Spiec-Easi model (Kurtz et al., 2015). 
+
+Github (: https://github.com/zdk123/SpiecEasi  
+doi : https://doi.org/10.1371/journal.pcbi.1004226 
+
+I chose this model because it addresses two major problems of correlation-based models:   
+
+  1)it uses the concept of conditional dependence to avoid the detection of correlated but indirectly connected taxa. Correlation is a pairwise metric and therefore limited in a multivariate framework.
+  2)it takes into account the compositionality of the data by applying a "clr" transformation on the input abundance table.
+  
+## **Some important concepts before embarking on microbial network inference**
+### Data compositionality 

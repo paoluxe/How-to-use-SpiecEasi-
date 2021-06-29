@@ -57,4 +57,41 @@ From a table of taxon abundances on multiple samples, it first applies a "clr" t
 </p>
 
 ## **I) Downloading the packages**  
+SpiecEasi  
+```{r eval=FALSE, include=TRUE}
+install.packages("devtools")
+library(devtools)
+install_github("zdk123/SpiecEasi")
+```
+phyloseq  
 
+```{r eval=FALSE, include=TRUE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("phyloseq")
+
+```
+
+
+## **II) Data loading and creation of the phyloseq object**  
+
+SpiecEasi can be used with an OTU abundance matrix containing samples in rows and taxa in columns.
+Row names = sample names / column names = taxa names.
+
+A phyloseq object can also be used.
+
+For the uplaod of the data and the creation of the phyloseq object, this tutorial has been creating according to the following link: https://vaulot.github.io/tutorials/Phyloseq_tutorial.html
+Form and content of the input matrices : see link above
+
+Import csv data
+
+
+```{r eval=FALSE, include=TRUE}
+## otu_mat = taxon abundance matrix across multiple samples: otu = rows/samples = columns
+otu_mat<- read.csv("otu_mat.csv", sep=";", header = T) ; View(otu_mat)
+
+## tax_mat = taxonomy matrix: otu = rows/taxonomy = columns
+tax_mat<- read.csv("tax_mat.csv", sep=";", header = T) ; View(tax_mat)
+
+## samples_df = matrix of variables: samples = rows/variables = columns
+samples_df <- read.csv("samples_df.csv", sep=";", header = T) ; View(samples_df)

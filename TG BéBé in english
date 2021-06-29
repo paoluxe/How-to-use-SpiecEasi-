@@ -42,3 +42,5 @@ If such a species is not known or not available, the reference can be replaced b
 
 
 ### Principle of co-occurrence networks    
+Co-occurrence networks require as input abundance tables of taxa from multiple samples. When two taxa co-occur or show a similar abundance pattern among multiple samples, a co-occurence is assumed between them. A positive link is shown in green (graph) or a "1" in the adjacency table (see below). Conversely, when these two taxa are mutually exclusive, a co-exclusion is assumed, illustrated by a red link connecting two nodes (graph) or a "-1" in the adjacency table (see below). 
+

@@ -273,13 +273,6 @@ transitivity(refit_matrix, type="globale") ## probabilité que deux noeuds respe
 edge.density(refit_matrix) ## rapport entre la somme des liens effectifs et la somme des liens potentiels
 
 
-walktrap <- function(refit_matrix){ ## nombre de modules avec la méthode walktrap
-  cluster <- cluster_walktrap(refit_matrix)
-
-  return(length(cluster))
-}
-walktrap(refit_matrix) ## nombre de modules que contient le réseau
-
 ```
 
 ## **VI) Calcule de métriques à l'échelle du noeud** 

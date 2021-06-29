@@ -173,5 +173,106 @@ se = spiec.easi(obj_physeq1_filtre,method = 'mb',
                      nlambda = 20,
                      icov.select.params = list(rep.num = 50))
 ```
+"Qualitative" adjacent matrix, an interaction between two nodes takes the value of 1,
+whatever its nature, positive or negative.
+```{r eval=FALSE, include=TRUE}
+refit_matrix = as.matrix(getRefit(se))
+colnames(refit_matrix) <- rownames(otu_table(obj_physeq))
+rownames(refit_matrix) <- rownames(otu_table(obj_physeq))
+View(refit_matrix)
+```
+"Quantitative" adjacent matrix, an interaction between two nodes is weighted by a coefficient
+which indicates the strength of the interaction, it is in fact the regression coefficient. The values go from -1 to 1
+```{r eval=FALSE, include=TRUE}
+optbeta_matrix = as.matrix(getOptBeta(se.data))
+colnames(optbeta_matrix) <- rownames(otu_table(obj_physeq))
+rownames(optbeta_matrix) <- rownames(otu_table(obj_physeq))
+```
+To have only the negative links:
+```{r eval=FALSE, include=TRUE}
+optbeta_matrix_neg <- function (optbeta_matrix){
+optbeta_matrix[optbeta_matrix>0]=0 ## set the positive coefficients to 0
+optbeta_matrix[optbeta_matrix<0]=1 ## set the negative coefficients to 1 (this is optional: if you want to have them in qualitative)
+return(optbeta_matrix)}
+
+optbeta_matrix_neg(optbeta_matrix)
+```
+To have only the positive links:
+```{r eval=FALSE, include=TRUE}
+optbeta_matrix_pos <- function (optbeta_matrix){
+optbeta_matrix[optbeta_matrix>0]=1 ## set the positive coefficients to 1 (this is optional: if you want to have them in qualitative)
+optbeta_matrix[optbeta_matrix<0]=0 ## set the negative coefficients to 0
+return(optbeta_matrix)}
+
+optbeta_matrix_pos(optbeta_matrix)
+```
+Edge stability matrix: an interaction between two nodes is weighted by a stability value
+of the edge. The global stability of the edges is computed through the iterations for the optimal lambda (cf SpiecEasi principle).
+```{r eval=FALSE, include=TRUE}
+optmerge_matrix = as.matrix(getOptMerge(se.data))
+colnames(optmerge_matrix) <- rownames(otu_table(obj_physeq))
+rownames(optmerge_matrix) <- rownames(otu_table(obj_physeq))
+```
+ the same edges are supposed to be obtained using refit_matrix and optbeta_matrix, it's just their values that change, these edges are calculated at the end of the procedure with 100% of the samples and the optimal lambda.
+ 
+ 
+ 
+optmerge_matrix gives  the stability of the edges through the N repetitions (here 50) for the optimal lambda 
+so,  the  number of edges won't be the same as on the two previous matrices. 
+ It is possible to look at your matrix only for a stability above a threshold.
+
+For a (brief) explanation of the functions
+```{r eval=FALSE, include=TRUE}
+?getRefit
+```
+The three ways I proposed don't necessarily work with a graph inferred by the "glasso" method.
 
 
+## **V) Calculation of the network metrics (network scale)
+from non-quantitative links
+```{r eval=FALSE, include=TRUE}
+library(igraph)
+ecount(refit_matrix) ## number of edges connecting two nodes contained in the network
+
+sum(degree(refit_matrix)) ## sum of the number of edges per node ~ 2* ecount
+
+mean(degree(refit_matrix)) ## average number of edges per node 
+
+It is possible to normalize these previous metrics by the number of nodes present so that they provide independent information of the number of connected nodes: 
+#indeed the more nodes the network contains the more likely it is that the number of edges is also high.
+# One way to do this is as follows
+
+ecount.norm <- function(refit_matrix){
+  noeud <- vcount(refit_matrix)
+  edge <- ecount(refit_matrix)
+  return(edge/noeud)
+}
+ecount.norm (refit_matrix)
+
+sum(degree(refit_matrix, normalized=TRUE)) 
+
+mean(degree(refit_matrix, normalized=TRUE))  
+#########
+
+
+connected.node <- function(reseau){ ## depending on the number of nodes with at least one link in the network
+  return(length(which(degree(reseau)>=0)))
+}
+connected.node(refit_matrix) ## number of connected nodes
+
+average_path_length(refit_matrix) ## average of the shortest path length, calculated over all pairs of nodes  
+transitivity(refit_matrix, type="globale") ## probability that two nodes respectively linked to the same third node are themselves linked
+
+
+ edge.density <- function(refit_matrix){ ## function of link density
+  noeud <- vcount(refit_matrix)
+  edge <- ecount(refit_matrix) 
+  combinaisons <- (noeud*(noeud - 1))/2
+  return(edge/combinaisons)
+}
+edge.density(refit_matrix) ## ratio between the sum of the effective links and the sum of the potential links
+
+
+```
+
+## **VI) Calculation of the node metrics (node scale)** 

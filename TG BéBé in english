@@ -160,7 +160,18 @@ Another way to filter the data that is not arbitrary is to use the MultiCoLA too
   doi:10.1093/nar/gkq545
    Scripts available here :https://www.mpi-bremen.de/en/Softwares.html#section1550
 
+## **IV)Co-Occurrence Networks**
 
-
+Obtaining the network: parameter values recommended by Kurtz
+To give you an idea of the processing time , a matrix of 100 samples and 400 OTUs --> 20 minutes
+an matrix of 100 samples and 1400 OTU --> 40 minutes
+The scripts were run on the specific cluster of calculation (Genouest platorm: https://www.genouest.org/.
+```{r eval=FALSE, include=TRUE}
+library(SpiecEasi)
+se = spiec.easi(obj_physeq1_filtre,method = 'mb',
+                     lambda.min.ratio = 1e-2,
+                     nlambda = 20,
+                     icov.select.params = list(rep.num = 50))
+```
 
 

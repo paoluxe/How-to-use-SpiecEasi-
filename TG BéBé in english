@@ -95,3 +95,72 @@ tax_mat<- read.csv("tax_mat.csv", sep=";", header = T) ; View(tax_mat)
 
 ## samples_df = matrix of variables: samples = rows/variables = columns
 samples_df <- read.csv("samples_df.csv", sep=";", header = T) ; View(samples_df)
+```
+The phyloseq objects must have row names
+
+```{r eval=FALSE, include=TRUE}
+library(dplyr)
+```
+otu_mat : the names of the rows become the otu
+```{r eval=FALSE, include=TRUE}
+otu_mat <- otu_mat %>%
+  tibble::column_to_rownames("otu") ## replace "otu" by the name of the column containing the otu/taxons/sp
+```
+tax_mat : the names of the rows become the otu
+```{r eval=FALSE, include=TRUE}
+tax_mat <- tax_mat %>% 
+  tibble::column_to_rownames("otu")
+```
+samples_df : the names of the rows become the samples
+```{r eval=FALSE, include=TRUE}
+samples_df <- samples_df %>% 
+  tibble::column_to_rownames("sample") ## replace "sample" by the name of the column containing the samples
+```
+Transformation of the data.frame into matrices 
+```{r eval=FALSE, include=TRUE}
+otu_mat <- as.matrix(otu_mat)
+tax_mat <- as.matrix(tax_mat)
+```
+Creation of the phyloseq object
+```{r eval=FALSE, include=TRUE}
+library(phyloseq)
+
+OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+TAX = tax_table(tax_mat)
+samples = sample_data(samples_df)
+
+obj_physeq <- phyloseq(OTU, TAX, samples)
+```
+
+
+## **III )Dataset processing: dataset separation, application of prevalence/abundance filters**
+Create groups of samples to be analyzed according to a modality of a variable
+```{r eval=FALSE, include=TRUE}
+obj_physeq1 <- subset_samples(obj_physeq, nomvariable =="modalite1") ## replace nomvariable and modalite (nomvariable=name of the variable; madalite=name of the modality)
+obj_physeq2 <- subset_samples(obj_physeq, nomvariable =="modalite2") ## replace nomvariable and modalite 
+```
+
+**Data filtering**
+Röttjers and Faust (2018) recommended the application of a prevalence filter on the abundance matrices to avoid the inference of biased associations due to the high number of zeros in the microbial abundance tables and a niche preference effect.
+
+Indeed, in a heterogeneous environment (biotic and abiotic conditions changing between samples) 2 species with growth optima in the same niches will co-occur. The opposite effect will lead to mutual exclusion.
+
+The microbial abundance tables are rich in zeros, but we don't know their significance, is it due to a real absence or an under-sampling?
+Correlations/regressions calculated over many matching zeros will be highly significant, even though the taxa involved may vary randomly below the detection limit. 
+
+The filter_taxa function can be used to apply an abundance or prevalence filter or both on the dataset
+Here: the taxa are present at least once in 20% of the samples. These choices are completely arbitrary and are given here as an example
+We play on the abundance via "sum(x > 0)" and on the prevalence via "(0.2*length(x))".
+```{r eval=FALSE, include=TRUE}
+obj_physeq1_filtre = filter_taxa(obj_physeq1, function(x) sum(x > 0) > (0.2*length(x)), TRUE)
+```
+Another way to filter the data that is not arbitrary is to use the MultiCoLA tool. This tool evaluates the impact of different abundance or rarity thresholds on the structure of the resulting dataset.
+
+  Link to the article : https://academic.oup.com/nar/article/38/15/e155/2409766?login=true   
+  doi:10.1093/nar/gkq545
+   Scripts available here :https://www.mpi-bremen.de/en/Softwares.html#section1550
+
+
+
+
+
